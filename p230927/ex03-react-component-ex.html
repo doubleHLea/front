@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>컴포넌트 연습</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+  <div id="text"></div>
+  <hr>
+
+  <script type="text/babel">
+
+    // 1. 리액트 엘리먼트를 변수에 저장 --------------------------------
+    const h1 = <h1>안녕하세요</h1>; // 리액트엘리먼트 한줄은 ()생략가능
+    const one = 100;
+    const ul = (
+      // [react element] =================================
+      // {} 태그가 없는 곳에 사용 불가 Error!
+      // console.log(); Error! react영역이라 JS언어 안됨
+      <ul>
+        <li>첫 번째 : {one}</li>
+        <li>두 번째</li>
+      </ul>
+    );
+
+    const app = (
+      <div>
+        {h1}
+        {ul}
+      </div>
+    )
+
+    // 2. 컴포넌트 --------------------------------
+    /* 
+    [문법]
+    함수정의와 같은 대신 대문자로 시작함
+    function 대문자시작(props) {
+      // props : properties(속성들) 약자
+      // 명령어
+      return (리액트 엘리먼트);
+      ()리엑트니까 꼭 해줘야함
+    }
+    */
+    const Name = () => { return (<h1>hello!!~</h1>) };
+
+    const userName = '홍길동';
+
+    // props(속성)가 받는 건 객체(여러개일수도있어서), 객체는 키를 통해서 접근한다
+    function H1({ name, age }) {
+      // 객체 구조분해할때 꼭 {}로 묶어줘야함
+      // console.log('props >> ', props);
+      return (
+        <div>
+          <h1>안녕하세요, {name}님!</h1>
+          <div>나이는 {age}세 입니다.</div>
+        </div>
+      );
+      // 한줄이면 () 생략 가능
+    }
+
+    const Ul = () => {
+      return (
+        <ul>
+          <li>첫 번째 : {one}</li>
+          <li>두 번째</li>
+        </ul>
+      );
+    };
+
+    const componentApp = (
+      <div>
+        <H1 name="박보검" age="25" />
+        <H1 name={userName} age="35">
+        </H1>
+        {H1({ name: "김이박", age: 52 })}
+        <Ul />
+      </div>
+      // 컴포넌트를 태그처럼 사용할 수 있다 빈태그<H1/>로 쓰거나 종료태그를 설정가능
+      // H1({객체를 넣어야하니까 {}})
+    );
+
+    const ComponentApp = () => {
+      console.log('== [ 컴포넌트 앱 ] ==');
+      return (
+        <div>
+          <H1 name="박보검" age="25" />
+          <H1 name={userName} age="35">
+          </H1>
+          {H1({ name: "김이박", age: 52 })}
+          <Ul />
+        </div>
+      );
+    }
+
+    const insert = document.getElementById('text');
+    // ReactDOM.createRoot(insert).render(app);
+    // ReactDOM.createRoot(insert).render(componentApp);
+    // 컴포넌트가 바로 reder에 들어갈 수 없음, 일반적인 태그 안에 들어와야함
+    ReactDOM.createRoot(insert).render(<ComponentApp/>);
+    // 문법에 맞게 ComponentApp() 이나 <ComponentApp />으로 써야함
+  </script>
+</body>
+
+</html>

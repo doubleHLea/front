@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>상품 1페이지</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    .main-card button {
+      position: relative;
+      bottom: 15px;
+      left: -45px;
+    }
+
+    .favorites {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .favorites img {
+      width: 150px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="food-li-insert"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <script type="text/babel">
+    function Title(props) {
+      return <h1>{props.children}</h1>;
+    }
+
+    // 화살표 함수로 생략가능한 것들 생략
+    // const Form = () => (
+    //     <form action="">
+    //       <input type="text" name="name" placeholder="상품명을 입력하세요" />
+    //       <button type="submit">추가</button>
+    //     </form>
+    //   );
+
+    // component
+    const Form = function ({ handlerFormSubmit }) {
+      // [상태 추가] -----------------------------------
+      // Data 관리(State) - 변수: 값 저장, 함수: 기능
+      // React.useState(초기값);
+      // cf) React.useState('초기값 문자열 지정');
+      // 초기값 : number, string 가능 // useState return = 배열[초기값, 익명함수]
+
+      // const counterState = React.useState(1); //상태를 초기화시켜주는 메소드 (초기값)을 넣어줌
+      // const counter = counterState[0]; // 초기값
+      // const setCounter = counterState[1]; // setState 익명함수 / setState는 꼭 변수 이름은 set + 초기값 변수 이름
+
+      // 구조 분해 할당
+      // const [counter, setCounter] = React.useState(1); // 구조분해할당을 하면 위의 코드를 한줄로 바꿀 수 있음
+      // console.log('[핸들러 밖] counter : ', counter);
+
+      // function handlerFormSubmit(event) {
+      //   event.preventDefault();
+      //   console.log('추가 버튼 클릭함!!!');
+
+      //   // [상태값 설정] --------------------------------
+      //   // setCounter('상태값 변경!');
+      //   setCounter(counter + 1); // data를 관리하고자 하는 내용을 익명함수를 이용해서 변경해줌
+      //   //사용자가 어떠한 작업을 해야 상태값 설정이 가능(함수 안에 넣어야함)
+
+      //   // [상태값 확인] --------------------------------
+      //   // console.log('counterState', counterState);
+      //   console.log('counter : ', counter); //바뀌기 전의 값을 출력, 값을 먼저쓰고 나중에 setCounter실행되서 변경(그게 useState의 기능)
+      //   // console.log('setCounter : ', setCounter);
+      // }
+      return (
+        <form action="" onSubmit={handlerFormSubmit}>
+          <input type="text" name="name" placeholder="상품명을 입력하세요" />
+          <button type="submit">추가</button>
+        </form>
+      );
+    };
+
+    const MainCard = ({ src, handlerIconClick }) => {
+      // function iconClick() {
+      //   console.log('이모지 클릭!!');
+      // }
+
+      // react에서 사용할때는 class의 의미가 중복되어서 className으로 써줘야함
+      return (
+        <div className="main-card">
+          <img
+            src={src}
+            alt="올리브 오일"
+            width="400"
+            style={{ border: "1px solid green" }}
+          />
+          <button onClick={handlerIconClick}>🎅</button>
+        </div>
+      );
+    }
+
+    const FoodItem = ({ src }) => {
+      return (
+        <li>
+          <img
+            src={src}
+            alt="음식"
+            style={{
+              width: "150px",
+              height: "100px",
+              backgroundSize: "contain"
+            }}
+          />
+        </li>
+      );
+    };
+
+    const Favorites = ({ favorites }) => {
+      // const foodOne = 'img/food-one.jpg';
+      // const foodTwo = 'img/food-two.jpg';
+      // const foodThree = 'img/food-three.jpg';
+      // const foods = [foodOne, foodTwo, foodThree];
+      const time = Date.now();
+
+      //배열.map(callback함수) => 배열을 하나씩 순회
+      return (
+        <ul className="favorites">
+          {/* <FoodItem src="img/food-one.jpg" /> */}
+          {/* <FoodItem src="img/food-two.jpg" /> */}
+          {/* <FoodItem src="img/food-three.jpg" /> */}
+          {/* foods.map(item => <FoodItem src={item} key={item}/>) */}
+          {favorites.map((item, time) => <FoodItem src={item} key={time} />)}
+          {/* <FoodItem src={favorites} /> */}
+        </ul>
+      );
+      //구분할 수 있는 키를 넣으라고 경고가 떠서 독자적인 키를 넣어줌.
+    };
+    // 2개의 리액트 엘리먼트를 렌더링하고자 할 때 
+    // 엘리먼트를 컴포넌트로 변경
+    const App = () => {
+      // [상태] -----------------------------------------
+      const foodOne = 'img/food-one.jpg';
+      const foodTwo = 'img/food-two.jpg';
+      const foodThree = 'img/food-three.jpg';
+      const [mainFood, setMainFood] = React.useState(foodOne);
+      const [favorites, setFavorites] = React.useState([foodOne, foodTwo]);
+      // map을 쓰기 위해서 문자열인 foodOne을 배열로 변경
+      const food = favorites[0];
+
+      // [상태 끌어올리기 : lifting state up] 
+      // 자식 component의 상태를 부모로 끌어올림
+      const [counter, setCounter] = React.useState(1);
+
+      // [handler] ---------------------------------------
+      function handlerFormSubmit(event) {
+        event.preventDefault();
+        console.log('추가 버튼 클릭함!!!');
+
+        // [상태값 설정] --------------------------------
+        setCounter(counter + 1);
+        console.log('counter : ', counter);
+        setMainFood(foodTwo);
+        console.log('mainFood : ', mainFood);
+      }
+      function handlerIconClick() {
+        console.log('이모지 클릭!!');
+        setFavorites([...favorites, foodThree]);
+        //배열의 요소를 펼쳐서 넣어줘야함! 그래서 전개구문 사용!
+      }
+
+      return (
+        <div>
+          <Title>페이지 {counter}</Title>
+          <Form handlerFormSubmit={handlerFormSubmit} />
+          <MainCard src={mainFood} handlerIconClick={handlerIconClick} />
+          <Favorites favorites={favorites} />
+        </div>
+      );
+    };
+
+    // 리액트 엘리먼트가 추가될 위치
+    const foodListInsert = document.getElementById('food-li-insert');
+
+    // 리액트를 이용하여 엘리먼트 추가
+    // ReactDOM.createRoot(foodListInsert).render(app);
+    ReactDOM.createRoot(foodListInsert).render(<App />);
+  </script>
+</body>
+
+</html>

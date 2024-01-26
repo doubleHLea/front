@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>상품 1페이지</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    .main-card button {
+      position: relative;
+      bottom: 15px;
+      left: -45px;
+    }
+
+    .favorites {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .favorites img {
+      width: 150px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="food-li-insert"></div>
+
+  <!-- React를 실행. -->
+  <!-- 주의: 사이트를 배포(서버에 올리는 것)할 때는 "development.js"를 "production.min.js"로 대체하세요. -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <!-- 바벨 코드도 넣어야 JSX 사용 가능 -->
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <!-- 사용할 script 태그에 type="text/babel" 넣어줘야 사용 가능 (바벨이 HTML의 태그를 JS가 인식할 수 있는 스타일로 바꿔줌) -->
+  <script type="text/babel">
+    /* 
+    [react] JSX ===========================================
+    : JavaScript + XML(태그를 만들어서 쓸 수 있음)
+    : JavaScript 내에 HTML 작성 가능
+    : HTML 태그 내 JavaScript 작성하려면, {} 사용
+    : 작성된 HTML을 '리액트 엘리먼트'라고 함
+    =======================================================
+    */
+
+    console.log('처음 배우는 리액트');
+
+    // 여러 라인은 ()로 넣어줌, 한 줄은 필요 없음
+    const foodItem = ( //react에서 만든 엘리먼트 = 리엑트엘리먼트
+      <li>
+        <img src="img/food-one.jpg" alt="음식" />
+      </li>
+    );
+    // JSX문법 : 빈태그는 끝에 />로 넣어준다.
+
+    const hi = '오늘도 좋은 하루';
+    function test(args) {
+      return `인수는 ${args}입니다.`;
+    }
+
+    const favorites = (
+      // ********* HTML 태그 내 JavaScript 작성하려면, {} 사용
+      <ul class="favorites">
+        {hi}
+        <br />
+        {test('네모')}
+        <br />
+        {/* 100+5 한줄에서는 여러라인 주석을 써야함 */}
+        <br />
+        100+5
+        {
+          // 띄어쓰면 한 줄 주석은 가능
+        }
+        {
+          /* 
+          여러줄도 가능
+           */
+        }
+        {foodItem}
+        {foodItem}
+        {foodItem}
+      </ul>
+      // {}안에 넣으면 연산이 되고 HTML로 넣으면 문자열로 나옴
+    );
+
+    const mainCard = (
+      <div class="main-card">
+        <img src="img/food-one.jpg" alt="올리브 오일" width="400" />
+        <button>🎅</button>
+      </div>
+    );
+
+    const form = (
+      <form action="">
+        <input type="text" name="name" placeholder="상품명을 입력하세요" />
+        <button type="submit">추가</button>
+      </form>
+    );
+
+    const title = <h1>상품 1페이지</h1>;
+
+    // 2개의 리액트 엘리먼트를 렌더링하고자 할 때 (그걸 모은걸 app이라고 부름)
+    const app = (
+      // 엘리먼트가 각각 여러개가 오면 꼭 그걸 묶어주는 부모엘리먼트가 있어야함.
+      // 엘리먼트는 하나의 형태로 들어와야함
+      <div>
+        {title}
+        {form}
+        {mainCard}
+        {favorites}
+      </div>
+    );
+
+    // 리액트 엘리먼트가 추가될 위치
+    const foodListInsert = document.getElementById('food-li-insert');
+
+    // 리액트를 이용하여 엘리먼트 추가
+    // 웹브라우저가 만든 돔을 리액트가 복사해서 사용함(가상DOM) - 빠른 수정이 가능
+    /* 
+    ReactDOM.render(리액트 엘리먼트, (바디)엘리먼트);
+    리액트엘리먼트를 바디에 있는 엘리먼트에 추가
+    */
+
+    // ReactDOM.render(foodItem, foodListInsert); // 17 이전 버전까지 사용한 문법, 18부터는 지원안됨
+
+    // 18 버전
+    // ReactDom.createRoot((바디)엘리먼트).render(리액트엘리먼트);
+    // ReactDOM.createRoot(foodListInsert).render(foodItem);
+    // ReactDOM.createRoot(foodListInsert).render(favorites);
+    ReactDOM.createRoot(foodListInsert).render(app);
+  </script>
+</body>
+
+</html>

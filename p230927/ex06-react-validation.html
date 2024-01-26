@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>상품 1페이지</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    .main-card button {
+      position: relative;
+      bottom: 15px;
+      left: -45px;
+    }
+
+    .favorites {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .favorites img {
+      width: 150px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="food-li-insert"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <script type="text/babel">
+    function Title(props) {
+      return <h1>{props.children}</h1>;
+    }
+
+    // component
+    // const Form = function ({ handlerFormSubmit }) {
+    const Form = function ({ updateCounter }) {
+      const [value, setValue] = React.useState("");
+      // value에는 사용자에게 받은 값이 들어갈거라 정의해주면 안됨, 비워두면 안됨, 그래서 값을 따로 저장해서 uppercase로 바꿔줌
+      const [errorMessage, setErrorMessage] = React.useState("");
+
+      // 한글 검증
+      const hangul = (text) => /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
+
+      function handlerInputChange(data) {
+        // console.log(data);
+        // console.log(data.target);
+        // console.log(data.target.value);
+        // console.log(data.target.value.toUpperCase());
+        const userValue = data.target.value;
+        console.log(hangul(userValue));
+
+        if (hangul(userValue)) {
+          setErrorMessage('한글은 입력할 수 없습니다.');
+        } else {
+          setErrorMessage("");
+        }
+
+        setValue(userValue.toUpperCase());
+      };
+      //onChange=함수명();
+      /* 
+      정규표현식 : 문자열에서 특정 문자가 있는지 없는지 찾아냄 
+      [문법]
+      /pattern(찾고자 하는 문자의 형식)/ 
+      / a|b : a or b / [a-c] : a,b,c 연달아 있는 문자 / [a-z] : 모든 소문자 [a-z|A-Z] : 모든 영어 [가-힣] : 모든 한글
+      
+      함수를 써도 되지만 정규표현식은 찾고자하는 문자의 형식을 지정할 수 있음
+      */
+
+      // ================================================
+      // [문제] 값을 입력하지 않고, 추가 버튼을 클리하면,
+      // '값이 없으므로 추가할 수 없습니다.' 메시지 출력
+      // ================================================
+      function handlerFormSubmit(event) {
+        // refresh 방지
+        event.preventDefault();
+
+        console.log('errorMessage:', errorMessage);
+        
+        if (value === '') {
+          setErrorMessage('값이 없으므로 추가할 수 없습니다.');
+          // return;
+        } else {
+          setErrorMessage(''); //기존의 에러메세지를 초기화
+          updateCounter();
+        }
+
+        // updateCounter(); //else를 안쓰고 return을 쓰면 밖에 놔도됨
+      }
+
+      return (
+        <form action="" onSubmit={handlerFormSubmit}>
+          <input type="text" name="name" placeholder="상품명을 입력하세요" onChange={handlerInputChange} value={value} />
+          <button type="submit">추가</button>
+          <p style={{ color: "#f00" }}>{errorMessage}</p>
+        </form>
+      );
+    };
+
+    const MainCard = ({ src, handlerIconClick }) => {
+      return (
+        <div className="main-card">
+          <img
+            src={src}
+            alt="올리브 오일"
+            width="400"
+            style={{ border: "1px solid green" }}
+          />
+          <button onClick={handlerIconClick}>🎅</button>
+        </div>
+      );
+    }
+
+    const FoodItem = ({ src }) => {
+      return (
+        <li>
+          <img
+            src={src}
+            alt="음식"
+            style={{
+              width: "150px",
+              height: "100px",
+              backgroundSize: "contain"
+            }}
+          />
+        </li>
+      );
+    };
+
+    const Favorites = ({ favorites }) => {
+      const time = Date.now();
+
+      //반복해서 여러개의 똑같은 엘리먼트가 만들어져서 유일값의 key가 필요한것,
+      return (
+        <ul className="favorites">
+          {favorites.map((item, time) => <FoodItem src={item} key={time} />)}
+        </ul>
+      );
+    };
+    const App = () => {
+      // [상태] -----------------------------------------
+      const foodOne = 'img/food-one.jpg';
+      const foodTwo = 'img/food-two.jpg';
+      const foodThree = 'img/food-three.jpg';
+      const [mainFood, setMainFood] = React.useState(foodOne);
+      const [favorites, setFavorites] = React.useState([foodOne, foodTwo]);
+      const food = favorites[0];
+
+      // [상태 끌어올리기 : lifting state up] 
+      // 자식 component의 상태를 부모로 끌어올림
+      const [counter, setCounter] = React.useState(1);
+
+      // [handler] ---------------------------------------
+      function updateCounter(event) {
+        // event.preventDefault();
+        // console.log('추가 버튼 클릭함!!!');
+
+        setCounter(counter + 1);
+        // console.log('counter : ', counter);
+        setMainFood(foodTwo);
+      }
+
+      function handlerIconClick() {
+        console.log('이모지 클릭!!');
+        setFavorites([...favorites, foodThree]);
+      }
+
+      return (
+        <div>
+          <Title>페이지 {counter}</Title>
+          <Form updateCounter={updateCounter} />
+          <MainCard src={mainFood} handlerIconClick={handlerIconClick} />
+          <Favorites favorites={favorites} />
+        </div>
+      );
+    };
+
+    // 리액트 엘리먼트가 추가될 위치
+    const foodListInsert = document.getElementById('food-li-insert');
+
+    // 리액트를 이용하여 엘리먼트 추가
+    ReactDOM.createRoot(foodListInsert).render(<App />);
+  </script>
+</body>
+
+</html>

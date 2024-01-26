@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>상품 1페이지</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    .main-card button {
+      position: relative;
+      bottom: 15px;
+      left: -45px;
+    }
+
+    .favorites {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .favorites img {
+      width: 150px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="food-li-insert"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <script type="text/babel">
+    // JSON을 묶어서 관리하기 위해 grobal에 생성.
+    const jsonLocalStorage = {
+      setItem: (key, value) => {
+        localStorage.setItem(key, JSON.stringify(value));
+      },
+      getItem: (key) => {
+        return JSON.parse(localStorage.getItem(key));
+      },
+    };
+
+    function Title(props) {
+      return <h1>{props.children}</h1>;
+    }
+
+    // component
+    const Form = function ({ updateCounter }) {
+      const [value, setValue] = React.useState("");
+      const [errorMessage, setErrorMessage] = React.useState("");
+
+      // 한글 검증
+      const hangul = (text) => /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
+
+      function handleInputChange(data) {
+        const userValue = data.target.value;
+
+        if (hangul(userValue)) {
+          setErrorMessage('한글은 입력할 수 없습니다.');
+        } else {
+          setErrorMessage("");
+        }
+
+        setValue(userValue.toUpperCase());
+      };
+
+      function handleFormSubmit(event) {
+        event.preventDefault();
+
+        if (value === '') {
+          setErrorMessage('값이 없으므로 추가할 수 없습니다.');
+        } else {
+          setErrorMessage('');
+          updateCounter();
+        }
+      }
+      return (
+        <form action="" onSubmit={handleFormSubmit}>
+          <input type="text" name="name" placeholder="상품명을 입력하세요" onChange={handleInputChange} value={value} />
+          <button type="submit">추가</button>
+          <p style={{ color: "#f00" }}>{errorMessage}</p>
+        </form>
+      );
+    };
+
+    const MainCard = ({ src, handleIconClick, choiceFavorites }) => {
+      const [click, setClick] = React.useState('');
+      const santaIcon = choiceFavorites ? '🎅' : '💜';
+
+      function handleClick() {
+        setClick(Number(click + 1));
+        handleIconClick();
+      }
+
+      return (
+        <div className="main-card">
+          <img
+            src={src}
+            alt="올리브 오일"
+            width="400"
+            style={{ border: "1px solid green" }}
+          />
+          <button onClick={handleIconClick}>{santaIcon}{click}</button>
+        </div>
+      );
+    }
+
+    const FoodItem = ({ src }) => {
+      return (
+        <li>
+          <img
+            src={src}
+            alt="음식"
+            style={{
+              width: "150px",
+              height: "100px",
+              backgroundSize: "contain"
+            }}
+          />
+        </li>
+      );
+    };
+
+    const Favorites = ({ favorites }) => {
+      const date = Date.now();
+
+      return (
+        <ul className="favorites">
+          {favorites.map((item, date) => <FoodItem src={item} key={date} />)}
+        </ul>
+      );
+      // 키값이 중복되면 노드가 형성될때 문제가 생길 수 있음. 리액트 공식.
+      // 같은 엘리먼트라면 리랜더링될때 키 값이 달라지면 안됨.(원래 서버에서 Primary key(유일값)를 가장 많이씀)
+    };
+    const App = () => {
+      // [상태] -----------------------------------------
+      const foodOne = 'img/food-one.jpg';
+      const foodTwo = 'img/food-two.jpg';
+      const foodThree = 'img/food-three.jpg';
+      const [mainFood, setMainFood] = React.useState(foodOne);
+      const [favorites, setFavorites] = React.useState(jsonLocalStorage.getItem('favorites') || []);
+      // 저장된 데이터가 없으면 null, map이 null때문에 에러남.
+      // 그래서 null일 경우 빈배열을 넣어줌 ||(or) 조건이 들어갈 수 있다.
+      // 자바에서는 이렇게 하면 true, false가 나옴.
+      const food = favorites[0];
+
+      // [상태 끌어올리기 : lifting state up] 
+      // 자식 component의 상태를 부모로 끌어올림
+      // const [counter, setCounter] = React.useState(Number(localStorage.getItem('counter')));
+      // const [counter, setCounter] = React.useState(JSON.parse(localStorage.getItem('counter')));
+      // 가져온 데이터를 역직렬화 해줘야함 JSON.parse
+      const [counter, setCounter] = React.useState(jsonLocalStorage.getItem('counter'));
+
+      // console.log(localStorage.getItem('counter'));
+      // console.log(Number(localStorage.getItem('counter')));
+
+      // [문제] 하트 클릭하면, 로컬 스토리지에 favorites 저장
+     
+
+      // 아이콘 버튼
+      const choiceFavorites = favorites.includes(mainFood);
+      // 배열.includes(); 배열에 포함되어있는지 ture,false확인
+
+      // [handler] ---------------------------------------
+      function updateCounter(event) {
+        // useState의 처리 방식이 비동기이기때문에 미리 변수에 변할 값을 저장함
+        const nextCounter = counter + 1;
+        setCounter(nextCounter);
+        setMainFood(foodTwo && foodThree);
+        console.log('nextCounter : ' + nextCounter);
+        // lovalstorage에 저장
+        // localStorage.setItem('counter', nextCounter);
+        // localStorage.setItem('counter', JSON.stringify(nextCounter));
+        jsonLocalStorage.setItem('counter', nextCounter);
+      }
+
+      function handleIconClick() {
+        console.log('이모지 클릭!!');
+        const nextFavorites = [...favorites, mainFood];
+        // setFavorites([...favorites, foodThree]);
+        setFavorites(nextFavorites);
+        jsonLocalStorage.setItem('favorites', nextFavorites);
+      }
+
+      return (
+        <div>
+          <Title>페이지 {counter}</Title>
+          {/* <Title>페이지 {'Hi' && '안녕'}</Title> */}
+          <Form updateCounter={updateCounter} />
+          <MainCard src={mainFood} handleIconClick={handleIconClick} choiceFavorites={choiceFavorites} />
+          <Favorites favorites={favorites} />
+        </div>
+      );
+      // {}안에 조건이 와도됨
+      // &&가 되면 왼쪽에서 오른쪽으로 만족하는지 검사해서 마지막 것을 가져다씀
+      // ||은 왼쪽 기준으로 사용
+    };
+
+    // 리액트 엘리먼트가 추가될 위치
+    const foodListInsert = document.getElementById('food-li-insert');
+
+    // 리액트를 이용하여 엘리먼트 추가
+    ReactDOM.createRoot(foodListInsert).render(<App />);
+  </script>
+</body>
+
+</html>
